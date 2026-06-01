@@ -21,23 +21,4 @@ async def start(
 ):
     if message.peer_id < 0:
         return
-
-    if await user_service.is_user_exists(message.from_id):
-        await message.answer(
-            "Здравствуйте. Я, соколёнок Русик, интернет-помощник ЛДПР. "
-            "Добро пожаловать в ЛДПР! Вы уже зарегистрированы."
-        )
-        await message.answer(
-            "Используйте кнопку ниже, чтобы открыть наш сайт",
-            keyboard=get_miniapp_keyboard()
-        )
-        return
-    photo = await photo_uploader.upload('docs/sokol_stay.webp', peer_id=message.peer_id)
-    await message.answer(attachment=photo)
-    await message.answer("Здравствуйте. Я, соколёнок Русик, интернет-помощник ЛДПР. Добро пожаловать в ЛДПР!")
-    await message.answer("Если вы допустили ошибку при заполнении анкеты, напишите мне 'Заново' или 'Начать'")
-    await message.answer(
-        "Для начала дайте согласие на обработку персональных данных",
-        keyboard=get_personal_data_keyboard()
-    )
-    await state_dispenser.set(message.from_id, RegistrationStates.PERSONAL_DATA)
+    await message.answer("Этот бот создан для коммуникации по вопросам формирования баллов показателей: «всероссийского приема граждан» и «агитационная сеть» светофора")
