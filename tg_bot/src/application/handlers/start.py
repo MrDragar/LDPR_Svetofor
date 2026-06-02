@@ -33,8 +33,15 @@ async def participant_start(
 @start_command_router.message(filters.CommandStart())
 @start_command_router.message(F.text == 'Отмена')
 async def start(message: types.Message,
-                state: FSMContext):
+                state: FSMContext, user_service: IUserService):
     if message.chat.id <= 0:
+        return
+    if await user_service.exists(message.chat.id, Sources.TG):
+        await message.reply(
+            "Уважаемые коллеги, данный бот разработан для уведомления о показателях № 2 "
+            "«Мобилизационная база» и индикатора № 3 «Вовлеченность депутатов ЛДПР в проведение ВПГ», "
+            "показателя № 1 «Выполнение мероприятий планирования» светофора»."
+        )
         return
     logging.debug(f"User {message.from_user.id} Start conversation")
 
