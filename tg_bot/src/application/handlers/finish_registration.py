@@ -30,6 +30,7 @@ async def finish_registration(user_service: IUserService, state: FSMContext, mes
         parse_mode="HTML",
         reply_markup=types.ReplyKeyboardRemove()
     )
+    await state.clear()
     await message.bot.send_message(chat_id=log_chat, text=f"""
 Новый пользователь 
 {'@' + message.chat.username if message.chat.username else '<нет username>'} 
