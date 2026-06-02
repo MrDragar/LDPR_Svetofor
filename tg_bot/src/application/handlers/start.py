@@ -10,6 +10,7 @@ from src.application.states import RegistrationStates
 
 from src.application.filters import IsRegisteredFilter
 from src.domain.entities import Sources
+from src.services.interfaces import IUserService
 
 router = Router(name=__name__)
 start_command_router = Router(name=__name__)
