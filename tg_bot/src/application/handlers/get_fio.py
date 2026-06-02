@@ -70,6 +70,5 @@ async def get_patronymic(message: types.Message, state: FSMContext, user_service
         return
     logger.debug(f"Got patronymic: {patronymic}")
     await state.update_data(patronymic=patronymic)
-    await message.reply("Укажите ваш пол", reply_markup=get_gender_keyboard())
-    await state.set_state(RegistrationStates.gender)
-
+    await message.reply("Укажите регион вашего проживания")
+    await state.set_state(RegistrationStates.region_by_text)

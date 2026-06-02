@@ -1,10 +1,7 @@
 import re
-from datetime import date
 
 from src.domain.entities.user import User, Sources
-from src.domain.exceptions import UserNotFoundError, PhoneBadFormatError, \
-    PhoneAlreadyExistsError, PhoneBadCountryError, EmailAlreadyExistsError, \
-    EmailBadFormatError, FioFormatError, NotFoundRegionError
+from src.domain.exceptions import UserNotFoundError, FioFormatError, NotFoundRegionError
 from src.domain.interfaces import IUnitOfWork, IUserRepository, \
     IStringSorterRepository
 from src.services.interfaces import IUserService
@@ -27,19 +24,15 @@ class UserService(IUserService):
         self.__source = source
 
     async def create_user(
-            self, user_id: int, username: str | None,
-            surname: str, name: str, is_member: bool,
-            patronymic: str | None, birth_date: date,
-            phone_number: str, region: str, email: str,
-            gender: str, city: str, wish_to_join: bool, home_address: str | None,
-            news_subscription: bool
+            self, user_id: int,
+            surname: str, name: str,
+            patronymic: str | None,
+            region: str
     ) -> User:
         user = User(
-            id=user_id, source=self.__source, username=username, phone_number=phone_number,
+            id=user_id, source=self.__source,
             surname=surname, name=name, patronymic=patronymic,
-            birth_date=birth_date, region=region, email=email,
-            gender=gender, city=city, wish_to_join=wish_to_join,
-            home_address=home_address, is_member=is_member, news_subscription=news_subscription
+            region=region
         )
         async with self.__uow.atomic():
             await self.__user_repo.create_user(user)
@@ -64,37 +57,6 @@ class UserService(IUserService):
             except Exception:
                 raise
             return True
-
-    async def validate_phone(self, phone_number: str) -> str:
-        phone_number = phone_number.strip()
-        if phone_number.startswith("+7"):
-            phone_number = "8" + phone_number[2:]
-        digits = []
-        for symbol in phone_number:
-            if symbol.isdigit():
-                digits.append(symbol)
-        phone_number = "".join(digits)
-        if len(phone_number) != 11:
-            raise PhoneBadFormatError
-        if not phone_number.startswith("8"):
-            raise PhoneBadCountryError
-
-        async with self.__uow.atomic():
-            is_existing = await self.__user_repo.is_phone_number_existing(phone_number)
-            if is_existing:
-                raise PhoneAlreadyExistsError
-        return phone_number
-
-    async def validate_email(self, email: str) -> str:
-        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(pattern, email.strip()):
-            raise EmailBadFormatError()
-
-        async with self.__uow.atomic():
-            is_existing = await self.__user_repo.is_email_existing(email)
-            if is_existing:
-                raise EmailAlreadyExistsError
-        return email.strip()
 
     async def validate_fio_part(self, part: str, part_name: str) -> str:
         part_name = part_name.capitalize()
@@ -143,14 +105,6 @@ class UserService(IUserService):
     async def get_all_users(self) -> list[User]:
         async with self.__uow.atomic():
             return await self.__user_repo.get_users(source=self.__source)
-
-    async def update_news_subscription(
-            self, user_id: int, news_subscription: bool
-    ) -> User:
-        async with self.__uow.atomic():
-            return await self.__user_repo.update_user_news_subscription(
-                user_id, self.__source, news_subscription
-            )
 
     async def get_region_by_prefix(self, region_prefix: str) -> str:
         for region in self.__region_addresses.keys():

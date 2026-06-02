@@ -20,26 +20,12 @@ class IUserRepository(ABC):
         ...
 
     @abstractmethod
-    async def is_phone_number_existing(self, phone_number: str) -> bool:
-        ...
-    
-    @abstractmethod
-    async def is_email_existing(self, email: str) -> bool:
-        ...
-
-    @abstractmethod
     async def get_users(
         self, 
         skip: int = 0, 
         limit: int = 100,
         **filters
     ) -> list[User]:
-        ...
-
-    @abstractmethod
-    async def update_user_news_subscription(
-            self, user_id: int, source: Sources, news_subscription: bool
-    ) -> User:
         ...
 
 

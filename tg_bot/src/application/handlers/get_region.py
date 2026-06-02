@@ -3,6 +3,7 @@ import logging
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 
+from .finish_registration import finish_registration
 from src.application.states import RegistrationStates
 from src.application.callbacks import RegionCallback, RetryRegionCallback
 from src.application.keyboards.region_keyborad import get_region_keyboard
@@ -39,12 +40,11 @@ async def retry_region_callback(query: types.CallbackQuery, state: FSMContext):
 async def region_by_button(
         query: types.CallbackQuery,
         callback_data: RegionCallback, state: FSMContext,
-        user_service: IUserService
+        user_service: IUserService, log_chat: str
 ):
     await query.message.edit_reply_markup(reply_markup=None)
     region = callback_data.region
     logger.debug(f'Выбранный регион: {region}')
     region = await user_service.get_region_by_prefix(region)
     await state.update_data(region=region)
-    await query.message.reply("Укажите ваш город или населённый пункт")
-    await state.set_state(RegistrationStates.city)
+    await finish_registration(user_service, state, query.message, log_chat)

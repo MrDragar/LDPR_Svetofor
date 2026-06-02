@@ -49,10 +49,15 @@ async def get_patronymic(message: Message, user_service: IUserService,
                                                               'Отчество')
 
         state = await state_dispenser.get(message.from_id)
-        await state_dispenser.set(message.from_id,
-                                  RegistrationStates.GENDER,
-                                  **state.payload,
-                                  patronymic=patronymic)
-        await message.answer("Укажите ваш пол:", keyboard=get_gender_keyboard())
+        await state_dispenser.set(
+            message.from_id,
+            RegistrationStates.REGION_BY_TEXT,
+            **state.payload,
+            patronymic=patronymic
+        )
+
+        await message.answer(
+            "Укажите регион вашего проживания (начните вводить название):"
+        )
     except exceptions.FioFormatError as e:
         await message.answer(str(e))

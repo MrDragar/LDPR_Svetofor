@@ -36,20 +36,6 @@ class UserRepository(IUserRepository):
         logger.debug(f"Found user {await user_orm.to_domain()}")
         return await user_orm.to_domain()
 
-    async def is_phone_number_existing(self, phone_number: str) -> bool:
-        session = self.__uow.get_session()
-        stmt = select(UserORM).where(UserORM.phone_number == phone_number)
-        user_orm = await session.scalar(stmt)
-        logger.debug(user_orm)
-        return user_orm is not None
-
-    async def is_email_existing(self, email: str) -> bool:
-        session = self.__uow.get_session()
-        stmt = select(UserORM).where(UserORM.email == email)
-        user_orm = await session.scalar(stmt)
-        logger.debug(user_orm)
-        return user_orm is not None
-
     async def get_users(
             self,
             skip: int = 0,
@@ -74,24 +60,3 @@ class UserRepository(IUserRepository):
             users.append(await user_orm.to_domain())
         logger.debug(f"Found {len(users)} users")
         return users
-
-    async def update_user_news_subscription(
-            self, user_id: int, source: Sources, news_subscription: bool
-    ) -> User:
-        logger.debug(f"Updating news subscription for user id={user_id} to {news_subscription}")
-        session = self.__uow.get_session()
-
-        stmt = select(UserORM).where(UserORM.id == user_id, UserORM.source == source)
-        user_orm = await session.scalar(stmt)
-
-        if user_orm is None:
-            logger.debug(f"Not found user with id={user_id}")
-            raise exceptions.UserNotFoundError()
-
-        user_orm.news_subscription = news_subscription
-
-        await session.commit()
-        await session.refresh(user_orm)
-
-        logger.debug(f"Updated news subscription for user id={user_id}")
-        return await user_orm.to_domain()
