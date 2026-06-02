@@ -18,7 +18,7 @@ async def finish_registration(user_service: IUserService, state: FSMContext, mes
         return await message.reply(f"Вы уже зарегистрировались.")
 
     user = await user_service.create_user(
-        message.from_user.id,
+        message.chat.id,
         surname, name, patronymic, region
     )
 
