@@ -24,15 +24,10 @@ async def finish_registration(user_service: IUserService, state: FSMContext, mes
         types.FSInputFile('docs/sokol_like.webp')
     )
     await message.answer(
-        f"Поздравляем, вы успешно зарегистрированы.\nВаш уникальный номер - Б{user.id}.",
+        f"Поздравляем, вы успешно зарегистрированы.\n",
         parse_mode="HTML",
         reply_markup=types.ReplyKeyboardRemove()
     )
-    await message.answer(
-        'Используйте кнопку ниже, чтобы открыть наш сайт',
-        reply_markup=get_miniapp_keyboard()
-    )
-    await message.answer("Меню", reply_markup=get_menu_keyboard())
     await message.bot.send_message(chat_id=log_chat, text=f"""
 Новый пользователь 
 {'@' + message.chat.username if message.chat.username else '<нет username>'} 
