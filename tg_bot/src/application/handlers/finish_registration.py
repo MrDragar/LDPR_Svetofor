@@ -1,8 +1,6 @@
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 
-from src.application.keyboards.menu_keyboard import get_menu_keyboard
-from src.application.keyboards.miniapp_keyboard import get_miniapp_keyboard
 from src.services.interfaces import IUserService
 
 
@@ -12,7 +10,11 @@ async def finish_registration(user_service: IUserService, state: FSMContext, mes
     name = data['name']
     patronymic = data['patronymic']
     region = data['region']
-    if await user_service.is_user_exists(message.from_user.id):
+    if await user_service.is_user_exists(message.chat.id):
+        try:
+            await state.clear()
+        except:
+            ...
         return await message.reply(f"Вы уже зарегистрировались.")
 
     user = await user_service.create_user(
