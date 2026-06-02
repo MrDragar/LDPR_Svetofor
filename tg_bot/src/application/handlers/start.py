@@ -37,7 +37,7 @@ async def start(message: types.Message,
                 state: FSMContext, user_service: IUserService):
     if message.chat.id <= 0:
         return
-    if await user_service.exists(message.chat.id, Sources.TG):
+    if await user_service.is_user_exists(message.from_user.id):
         await message.reply(
             "Уважаемые коллеги, данный бот разработан для уведомления о показателях № 2 "
             "«Мобилизационная база» и индикатора № 3 «Вовлеченность депутатов ЛДПР в проведение ВПГ», "
